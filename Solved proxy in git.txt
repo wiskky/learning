@@ -1,0 +1,21 @@
+
+if youre using proxy, you will be getting while trying to push to git repository 
+Then follow this steps:
+
+open Git Bash then enter this command
+
+$ git config --global http.proxy 
+if theres no output of it then the proxy in Git Bash is not set then set it with these command and use proxy and port shown in the 1st paragraph
+
+$ git config --global http.proxy proxyaddress:port
+then enter this command again
+
+$ git config --global http.proxy 
+and there you go it is set
+
+to reset the proxy on Git Bash just enter this command
+
+$ git config --global --unset http.proxy 
+ 
+This solution glad i could help. :)
+

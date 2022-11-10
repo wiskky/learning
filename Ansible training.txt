@@ -1,0 +1,197 @@
+******************************************************************************
+			ANSIBLE
+******************************************************************************
+https://docs.ansible.com/ansible/latest/index.html
+ansible --version
+
+install in Ubuntu
+sudo apt update
+sudo apt install software-properties-common
+sudo apt-add-repository --yes --update ppa:ansible/ansible
+sudo apt install ansible
+
+install with python3
+sudo apt install python3-pip
+ansible --version
+
+ansible localhost -m ping
+
+Assuming the Python and pip preconditions are fulfilled, which command installs Ansible on a Mac? - sudo pip3 --install ansible
+
+creating first ansible playbook
+
+---
+  - name: "My first play"
+    host: localhost
+  
+    tasks:
+
+      - name: "test reachability"
+        ping:
+
+      - name: "install stress"
+        homebrew:
+	  name: stress
+	  state: present
+
+Save the above as first.yml
+
+run: ansible-playbook first.yml or ansible-playbook first.yml -v
+
+Challenges
+1. Create two test files in a dir of your choose
+2. Create a playbook with a single play that consists of two tasks run against your local Ansible control node.
+3. The first task should ping the local Ansible system
+4. The second task should display the details of the two test files
+5. Ensure you run the palybook so that you can see the output of the modules used.
+
+solution
+create a challenges directory and create two files, test1 and test2.txt 
+then cd to challenges dir and ceate a yaml file called challenge.yml
+
+---
+  - name: "Challenge answers"
+    host: localhost
+  
+    tasks:
+
+      - name: "test reachability"
+        ping:
+
+      - name: "find module"
+        find:
+	  path: ~/challenges
+	  file_type: file
+
+Save this as challenge.yml
+change to the dir where you save your yml file and then run
+#ansible-playbook challenge.yml -v
+
+NOTE: place this on your ansible.cfg file (To make output to be formatted)
+
+[defaults]
+#Use the YAML callback plugin.
+stdout_callback = yaml
+#Use the stdout_callback when running ad-hoc commands
+bin_ansible_callbacks = True
+interpreter_python = auto_silent
+
+Ansible for orchestration
+Automation refers to a single task
+Orchestration refers to the management of many automated tasks
+
+---
+  - name: "Orchestration Example"
+    host: logicservers
+    serial: 1
+
+    tasks:
+
+    - name: "Shutdown Server"
+      debug:
+      msg: "shutdown {{ inventory_hostname }}"
+
+    - name: "Upgrade Firmware"
+      debug:
+      msg: "Upgrade {{ inventory_hostname }}"
+
+    - name: "Start Server"
+      debug:
+      msg: "Start {{ inventory_hostname }}"
+
+    - name: "Verify Server"
+      debug:
+      msg: "Verify {{ inventory_hostname }}"
+
+Save the above with orchestration.yml
+
+ON your ansible host file include these
+
+[logicservers]
+server1	ansible_host=127.0.0.1	ansible_connection=local    deprecation_warnings=false
+server2	ansible_host=127.0.0.2	ansible_connection=local    INTERPRETER_PYTHON=auto_silent
+server3	ansible_host=127.0.0.3	ansible_connection=local
+server4	ansible_host=127.0.0.4	ansible_connection=local
+
+Save this as myhosts
+
+Note: save both orchestraton.yml and myhosts in document
+
+Then run this in document directory:
+$ ansible-playbook orchestration.yml -i myhosts
+
+Ansible for system configuration management
+
+create a playbook to install NTP on your server
+
+---
+ - hosts: all
+   become: yes
+   name: "NTP Configuration"
+
+   tasks:
+          - name: "Ensure NTP is installed"
+            apt:
+             name:
+              - ntp
+             state: present
+
+          - name: "Ensure NTP is started now and at boot"
+	    service:
+   	     name: NTP
+             state: started
+             enabled: yes
+
+save this file with ntp.yml
+
+then run: ansible-playbook ntp.yml
+
+React to configuration changes with Ansible
+
+---
+  - name: "React with Change Example"
+    host: webservers
+    serial: 1
+
+    tasks:
+
+    - name: "Install nginx"
+      debug:
+       msg: "Install nginx on {{ inventory_hostname }}"
+
+    - name: "Upgrade nginx"
+      debug:
+       msg: "Upgrade nginx on {{ inventory_hostname }}"
+
+    - name: "Configure nginx"
+      debug:
+       msg: "Configure nginx on {{ inventory_hostname }}"
+      notify: restart ngnix
+      changed_when: True
+
+    - name: "Verify nginx"
+      debug:
+       msg: "Verify nginx on {{ inventory_hostname }}"
+      
+    handlers:
+    - name: restart nginx
+      debug:
+       msg: "CALLED HANDLER FOR RESTART"
+save the above as change.yml
+
+Then run: ansible-playbook change.yml -i myhosts
+
+Repeating tasks across fleets with Ansible
+NOTE: To execute ad hoc tasks use Ansible not ansible-playbook
+run 
+$ ansible all -m ping -i myhosts
+
+Anthony Sequeira 
+
+
+     
+
+
+
+
+

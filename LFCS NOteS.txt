@@ -1,0 +1,570 @@
+
+https://www.educba.com/
+https://www.techchak.com/projects
+
+https://www.jobbank.gc.ca/jobsearch/jobsearch?searchstring=Software+Developer&locationstring=&sort=M
+
+
+
+
+
+******************************************************************************
+			LFCS LINUX
+******************************************************************************
+
+To know default boot target
+systemctl get-default
+
+To set multi-user target
+sudo systemctl set-default multi-user.target (Terminal mode)
+
+To set up graphical mode
+sudo systemctl isolate graphical.target (when reboot it goes back to terminal mode)
+sudo systemctl set-default graphical.target
+
+To set for emergency mode
+sudo systemctl isolate emergency.target
+
+
+SUID AND GUID
+suid - 4	chmod 4662 filename
+guid - 2	chmod 2662 filename
+both - 6	chmod 6662 filename
+
+NOte: if S means no execution permission on the user or group
+      if s means there is execution permission on the user or group
+
+To find file that has either suid or sguid
+find . -perm /4000      for user
+find . -perm /2000 	for group
+find . -perm /6000 	contain both user and group
+
+Sticky bit set on the directory
+use 1 or +t to set  sticky bit on the directory
+Note: if t means that exection is set for the user
+      if T means that no exection is set for the user
+
+e.g chmod 1764 dir-name  
+    chmod +t dir-name 
+
+SEARCH FOR FILES
+find /usr/share -name '*.jpg'
+find /usr/share -size +10M  to search for the file larger than 10mb
+find /usr/share -nmin -1	To search for the file modified in the last minute.
+To search without case sesentive use -iname
+find  -nmin 5		To find file modified in five minute 
+find  -nmin -5		To find file modified in five minute ago 
+find  -nmin +5		To find file modified in b4 five minute and out into infinity
+
+mtime	To search for files mpdified in days or past 24-hours
+0 list files modified the past 24hours
+1 list files modified btw 24 and 48 hours
+
+find -mtine 2				#24-hour periods
+find -ctime -5				#Change minute
+
+find -name "f*" -size 512k		#AND operation
+find -name "f*" -o -size 512k		#OR operation
+find -not -name "f*"			#NOT Operation
+find \! -name "f*"			To ignore any fine start with letter f
+find -perm /677			To find file wit any of this permission
+sudo find /var -type f -perm -0777 -print
+
+USING SED 
+eg sed -i 's/canda/canada/g' userinfo.txt
+s means search for
+canda is the word we are searching for
+canada is the word we are replacing
+g means global search
+-i means in-place
+
+USING CUT
+cut -d ' ' -f 1 userinfo.txt
+-f  means file
+-d means delimited eg ''
+eg cut -d ',' -f 3 userinfo.txt 
+To list unique item
+e.g uniq countries.txt 		NOte: always using with sort 
+e.g sort countries.txt | uniq
+sort -du value.conf
+To eliminating any common values and ignore case 
+sort -duf value.conf
+
+COMPARING DIFF IN FILES
+eg diff -c file1 file2
+eg diff -y file1 file2		side by side compari
+
+TAR FILE
+tar --list --file filename.tar	the same as  tar tf filename.tar
+tar -tf archive.tar
+tar tf archive.tar
+tar cf archive.file file1			to create archive file
+tar rf archive.file file2			to append a file
+tar xf archive.file			To extract file in current directory
+tar xf archive.tar -C /tmp/		To extract to a new directory
+
+COMPRESS AND UNCOMPRESS FILE
+Compressing			Decompress
+gzip file1			gunzip file1.gz
+bzip2 file2			bunzip file2.bz2
+xz file3 				unxz file3.xz
+bzip2 --keep /home/bob/file.txt	 To keep original file without deleting
+Note: all the above will compress and delect the original file. 
+
+zip archive.zip file1
+zip -r archive.zip dir1/	To zip all files
+unzip archive.zip
+tar --create --gzip --file archive.tar.gz file -> tar czf archive.tar.gz file1
+					         tar cjf archive.tar.bz2 file1
+         tar cJf archive.tar.xz file1
+ Autocompress 				         tar caf archive.xz file1
+
+tar --extract --file archive.tar.gz 	To extract files
+tar xf archive.tar.gz file1
+sudo tar xf /home/bob/archive.tar.gz -C /opt		To extract into new directory use -C
+
+BACKUP FILES TO A REMOTE SYSTEM
+-rsync
+rsync -a pictures/ user@ip:/home/aaron/pictures
+
+Disk image
+sudo dd if=/dev/vda of=diskimage.rws bs=1M status=progress
+
+grep -r '^The' /etc/ > all_output.txt 2>&1 
+grep -v '^#' /etc/login.defs |sort | column -t   to sort file in a row
+
+ 02:00
+systemctl reboot (--force)
+systemctl poweroff (--force)
+sudo shutdown 02:00
+sudo shutdown -r  +15  to reboot in 15mins
+sudo shutdown  +120 to shutdown in two hours later  
+
+BOOT OR CHANGE SYSTEM INTO DIFF OPERATING MODES
+systemctl get-default				to know default mode of the system
+sudo systemctl set-default multi-user.target     (then rebooot)	To change to terminal mode
+sudo systemctl isolate graphical.target		To change to graphical mode
+sudo systemctl isolate emergency.target
+sudo systemctl isolate rescue.target
+
+INSTALL, CONFIGURE AND TROUBLESHOOT BOOTLOADERS
+VI /etc/default/grub	To change grub's default timeout mode 
+* Install grub to /dev/vda. Make sure to save the installation command output to /home/bob/grub.txt file.
+sudo grub2-install /dev/vda > /home/bob/grub.txt 2>&1
+
+USING SCRIPTING TO AUTOMATE SYSTEM MAINTENANCE TASKS
+1ST line of your script.sh is 	#!/bin/bash
+To check if file exists if yes rename it if create it a new file
+if test -f /tmp/archive.tar.gz; then
+	mv /tmp/archive.tar.gz /tmp/archive.tar.gz /tmp/archive.tar.gz.OLD
+	tar acf /tmp/archive.tar.gz .etc/dnf
+else
+	tar acf /tmp/archive.tar.gz .etc/dnf
+fi
+
+Using grep to find a text, if find return 0 if not return 1
+if grep -q '5' /etc/default/grup; then
+	echo 'Grub has timeout of 5 seconds'
+else
+	echo 'Grub does not have a timeout of 5 seconds.'
+fi
+
+check cat /etc/cron.hour1v/0anacron
+htttps://kodekloud.com/course/shell-scripts-for-beginners/
+
+MANAGING STARTUP PROCESSES AND SERVICES
+
+man systemd.service
+systemctl cat sshd.service			sshd conf file
+systemctl edit --full sshd.service		To edit sshd file
+sudo systemctl revert sshd.service		To reset/revert to the factory setting
+systemctl status, stop, start, restart, reload, disable, is-enabled,enable
+systemctl reload-or-restart sshd.service 	To graceful reload
+systemctl enable --now sshd.service		To enable and start at the same time
+systemctl mask atd.service			To prevent srv1 to start srv2 automatically
+systemctl unmask atd.service 			To services
+systemctl list-units --type service --all		To list all service  either enable or disable
+
+DIAGNOSE AND MANAGE PROCESSES
+ps (a, -a)
+ps aux
+top
+ps -U wisdom		All the processes running by user wisdom
+pgrep -a syslog		To know the process ID of syslog	
+nice  -n 11 bash
+ps l
+ps u 1 	###Using ps command, identify the CPU and Memory 			usage by only the process having PID 1
+ps lax
+ps fax	child relationship
+*user can only set a nice value from 0 to 19
+renice 7(nice value) 8209(PID)		To change the exist 									running processes value
+SIGNAL
+kill -L				   to list all kill bname
+kill -SIGHUP 1147(pid)
+kill -9 1147
+pkill -KILL bash
+sleep 180	
+sleep 180 &   			background processes
+pgerp -a bash    		 process no running by bash
+lsof -p bash_PID_above	to list all files open by bash
+lsof(list open file)
+lsof -p 1				To list all files that are openned by 					process with PID 1 
+lsof /var/log/messages
+
+LOCATE AND ANALYZE SYSTEM LOG FILES
+rsyslog- rocket-fast system for log processing
+Store logs in /var/log/
+grep -r 'ssh' /var/log/		To find all users login with ssh
+
+tail -f /var/log/messages
+tail -f /var/log/secure
+
+JOURNALCTL 
+Journalctl (-e, -f, -p, -g, -S, -U)
+journalctl /bin/sudo
+journalctl -u sshd.service		Search the logs for entries 							related to the SSH daemon
+Journalctl -p err (info, warning, err, crit)  ###Analyze the error logs through journalctl with the priority flag Journalctl -p info -g '^b'		using with grep option by 								using -g
+journalctl -S 02:00	 		To search with time
+journalctl -S 01:00 -U 02:00	Between 1am and 2am
+journalctl -S '2022-08-25 12:04:50'
+journalctl -b 0 		Log from currecnt boot
+journalctl -b -1 		Log from previous boot
+
+last				To see who log in
+lastlog				To see who log in last
+
+SCHEDULE TASKS TO RUN AT A SET DATE AND TIME
+cat /etc/crontab
+
+* * * * * username commandtoexecute
+1 2 3 4 5
+
+1 -> minute(0 - 59)
+2 -> hour (0 - 23)
+3 -> day of month (1 -31)
+4 -> month ( 1 - 12) (jan - dec)
+5 -> day of week 
+
+* = match all possible values(i.e every hour)
+, =  match multiple values (i.e 15,45)
+- =  range of values (1.e 2 - 4)
+/ = specifies steps (specifies steps (i.e */4)
+
+crontab	To edit crontab table
+crontab -l 	list all cron jobs
+crontab -r 	To remove cron job 
+sudo vim /etc/anacrontab
+
+Scheduling Jobs With At
+at 15:00    run at 3pm
+at '2:30 august 20 2022'
+at 'now + 30 minutes' (hours, days, weeks, months)
+atq		To check the running jobs
+at -c 20     20 is the job id producd in the previous code
+atrm 20 		to remove the job
+
+MANAGE SOFTWARE
+In centos we use dnf
+dnf check-upgrade		To list old packages that can be upgraded 
+dnf upgrade
+sudo dnf repolist
+sudo dnf repolist -v	To check the repos in verbose mode which are enable by default 
+sudo dnf repolist --all	To list all repo to be updated
+sudo dnf config-manager --enable powertools   (--disable)
+To add third party software	sudo dnf config-manager --add-repo htpps://download.docker.com 
+To remove third paty software : 	sudo dnf repolist -v then type	sudo rm /etc/yum.repos.d/docker-ce.repo
+sudo dnf search web server ('web server')
+sudo dnf ngnix info
+sudo dnf install nginx		To install packages
+sudo dnf reinstall ginx		To reinstall back the pakage you  						mistakely deleted.
+sudo dnf remove nginx			To uninstall package
+
+USING GROUP WITH DNF
+sudo dnf group list
+sudo dnf group install 'Server with GUI'
+sudo dnf group install --with-option 'server with GUI'	
+sudo dnf group remove 'server with GUI'
+sudo dnf group list --hidden	   To see more list of the group
+
+wget https://download.nomachine.com/download/linux/nomachine
+sudo dnf install ./nomachine_7.7.4.3_x86_64.rpm
+sudo dnf remove nomachine
+sudo dnf autoremove		To remove remaininig dependencies software
+sudo dnf history 
+sudo dnf <tab key>
+
+Using dnf to identify file origins
+dnf provides /etc/anacrontab	To know service to reinstall
+dnf rm /etc/anacrontab
+dnf reinstall cronie-anacron	From provides result
+dnf provides docker
+dnf repoquery --list nginx		To get a list of all the files 							that a package contains
+dnf repoquery -l nginx | grep conf	To search for or conf file 							for nginx
+
+We are working under /etc/samba directory, but we forgot the package name. Find out the package name for /etc/samba config path and store the output in /home/bob/forgot.txt file.
+***sudo dnf provides /etc/samba > forgot.txt***
+
+List all files contained by the curl package and save the output in /home/bob/curl.txt file.
+****sudo dnf repoquery --list curl > curl.txt****
+
+Verify the integrity and availability of resources
+df				To know if we are runing out of disk
+df -h				human readable used space
+du -sh /bin		disk/storage usage
+free -h			Memory usage
+uptime			To see how cpu cores were used
+lscpu				To see cpu usage details
+lspci				to see hardware usage details
+sudo xfs_repair -v /dev/vdb1	To verif d integrity of xfx file
+sudo fsck.ext4 -v -f -p /dev/vdb2   	To check and repair an  								ext4 file system
+To ensure that all the key processes are working perfectly
+systemctl list-dependencies
+sudo kill chronyd
+systemctl status chronyd.service
+systemctl start chronyd.service
+
+On /dev/vdb we have an XFS filesystem. Use the correct command to check this filesystem for errors and save the output in /home/bob/fscheck file.
+****sudo xfs_repair /dev/vdb > /home/bob/fscheck 2>&1****
+
+Kernel Runtime
+sysctl  is used to modify kernel parameters at runtime
+sysctl -a
+sudo sysctl -w net.ipv6.conf.default.disable_ipv6=1		To disable ipv6 set it to 1(note: no space btw = and 1)
+man sysctl.d
+sysctl -a | grep vm
+sudo vim /etc/sysctl.d/swap-less.conf		put vm.swapiness=29
+sudo sysctl -p /etc/sysctl.d/swap-less.conf	To make 29 									persist after booting 
+
+SELinux contexts label
+ls -Z			To see SELinux file and dir labels
+ps -axZ		To see all processes and security labels	
+ls -Z /usr/sbin/sshd		To see the file that start this.
+id -Z			To see the security context assigned to our 				current user when we logged in.
+sudo semanage login -l		To see how mapping is done.
+sudo semanage user -l			To see the role each user has
+getenforce(Enforcing, Permissive & Disabled)   To see if SElinux 			     is enabled and actively restricting actions
+
+Turn on kernel.modules_disabled kernel runtime parameter, so that loading new kernel modules will be disabled.
+***sudo sysctl -w kernel.modules_disabled=1***
+
+
+Change the SELinux context of /var/index.html file to httpd_sys_content_t
+****sudo chcon -t httpd_sys_content_t /var/index.html****
+
+Temporarily change the SELinux status to Permissive on this system.
+****sudo setenforce 0***
+***setenforce [ Enforcing | Permissive | 1 | 0 ]***
+
+NETWORKING
+Configuring networking and hostname resolution statically or dynamically
+TO find out the name of our network interface: ip link show (ip l)
+To see IP add configured for different network interfaces: ip addresses show (ip a)
+To see route table: ip route show (ip r)
+To see DNS resolver the system its currently using: cat /etc/resolv.conf
+ls /etc/sysconfig/network-scripts/
+cat /etc/sysconfig/network-scripts/ifcfg-enp0s3
+
+Network manager(NMTUI AND NMCLI)
+To install(dnf networkmanager)
+sudo nmtui
+*Static resolution is done through the /etc/host file
+/etc/hosts
+
+nmcli connection show
+nmcli connection modify enp0s3 autoconnect yes to enable device at a boot time
+
+Start, Stop and check Networking Services
+using ss and netstat command 
+sudo ss -ltunp		To display services running at d backgrd
+	-l - listening ()
+	-t - TCP connection
+	-u - UDP connection
+	-n - numeric values
+	-p - processes 
+systemctl status sshd		To check the status of the service
+(status, stop, disable, enable, start)
+ps 1677
+lsof -p 1677
+
+IMPLETMENT PACKET FILTERING
+USING firewalld
+systemctl status firewalld
+firewall-cmd --get-default-zone		To check default zone
+firewall-cmd --set-default-zone=public	To set FW Zone
+firewall-cmd --list-all	To list FW enable on d system
+firewall-cmd --info-service=cockpit	TO see port no corespond to cockpit service
+firewall-cmd --add-service=http or (--add-port=80/tcp)
+firewall-cmd --list-all
+firewall-cmd --remove-service=http or (--remove-port=80/tcp)
+firewall-cmd --add-source=10.11.12.0/24 --zone=trusted
+firewall-cmd --get-active-zones
+firewall-cmd --remove-source=10.11.12.0/24
+
+To make the rulw permanent
+firewall-cmd --add-port=80/tcp
+firewall-cmd --list-all
+firewall-cmd --runtime-to-permanent	To make rule active
+firewall-cmd --add-port=80/tcp --permanent  Make rule permanent
+
+Statically Route IP Traffic
+sudo ip route add 192.168.0.0/21 via 10.0.0.100
+sudo ip route add 192.168.0.0/21 via 10.0.0.100 dev eth03
+ip route del 192.168.0.0/24		To delete 
+ip route add  default via 10.0.0.100	Default gateway
+ip route del defaulte via 10.0.0.100
+
+To make it permanent
+nmcli conn show
+sudo nmcli conn modify enp03 +ipv4.routes "192.168.0.0/24 10.0.0.100"		To add route
+sudo nmcli device reapply enp03
+ip route show
+sudo nmcli conn modify enp03 -ipv4.routes "192.168.0.0/24 To remove route
+sudo nmcli device reapply enp03
+
+Synchronize time using other network peers
+systemctl status chronyd.service	Make sure is active and running
+timedatctl			Make sure is active and running
+
+To enable time zone
+sudo set-timezone America/New_York
+timedatectl list-timezones
+sudo dnf install chrony
+systemctl stsrt chronyd
+system enable chronyd
+timedatectl
+sudo system set-ntp true
+
+CONFIGURE A CACHING DNS SERVER
+Using BIND to install DNS server
+sudo dnf install bind bind-utils
+NOTE: binds main conf file is located at /etc/named.conf
+vi /etc/name.conf
+
+
+note: listen-on-port {127.0.0.1;};	To allow only internet on 								the same network
+listen-on-port {127.0.0.1; 192.168.0.0/24;};
+allow-query {any;};				To allow any network
+recursion yes;					Recursion option
+
+NOTE: after saving your named.conf run 
+systemctl start named.service
+
+NOTE: To allow external network to connect with our network, need to add new rule to firewall
+sudo firewall-cmd --add-service=dns --permanent
+to tetst
+dig @127.0.0.1 google.com or dig @localhost google.com
+dig @127.0.0.1 google.com 
+dig @127.0.0.1 google.com 
+ 
+MAINTAIN A DNS ZONE
+How to add a zone from our imaginary domain, example.com
+edit vi /etc/named.conf
+go to the end of the file where there is ZONE and create  zone example.com 
+
+*******
+You might have noticed that in the previous question, the A record value for example.com domain is different what we have in /var/named/example.com.zone DNS zone file. Which means, this file isn't in use yet or DNS server hasn't read it yet.
+Before you will see this 
+**********
+
+zone "." IN {
+	type hint;
+	file "named.ca";
+};
+
+Then change it to this
+
+zone "example.com" IN {
+	type master;
+	file "example.com.zone";
+};
+
+Then save the file and exit
+systemctl start named.servie
+
+We need to add the zone file by using /var/named and copy named.localhost
+cp --preserve=ownership /var/named/named.localhost /var/named/example.com.zone
+vi exsmple.com.zone
+check $TTL 1D means to cache for 1 day you can chang it to 1H 1 hour
+after finishing editing, 
+systemctl restart named.service
+
+To query the local DNS server and identify the currentA record of example.com
+sudo dig @localhost example.com
+
+Configure the Bind daemon to accept queries from any IP on the Internet. Make sure to start named service after making required changes in the configuration.
+	Edit /etc/named.conf file:
+	Add below given line in it under recursing-file 	"/var/named/data/named.recursing"; line
+
+	allow-query    { 0.0.0.0/0; };
+
+	Start named.service:
+
+We have added a new zone file /var/named/example.com.zone which contains DNS configuration for example.com domain.
+Query the local DNS server and identify the current A record value for example.com domain. (without updating any relevant configuration) and save the value in /home/bob/a-record file. (only the IP address)
+	dig @localhost example.com
+
+	Under ANSWER SECTION note down the IP address for A 	record, you will see an output something like this:
+	Copy the IP address and save it in /home/bob/a-record 	file: (93.184.216.34)
+
+Modify /var/named/example.com.zone and make mysql.example.com an alias for database.example.com by adding the proper CNAME entry. Otherwise said, mysql.example.com should point to database.example.com. Restart the named.service after you've added the new entry.
+sudo vi  /var/named/example.com.zone
+mysql.example.com.      CNAME   database.example.com.
+sudo systemctl restart named.service
+
+var a = 0;
+while(a < 8){
+console.log(a +"\n");
+a++;
+}
+
+var a = 0;
+do{
+	console.log(a +"\n");
+	a++;
+}while(a < 8)
+
+var array = [1,2,5,6,4]; 
+for(int i=0;i<array.length;i++){
+	console.log(array[i]);
+}
+
+array.forEach((item) => {
+	console.log(item);
+})
+
+array.forEach(function(item) {
+	console.log(item);
+})
+
+
+forEach(array r: int){
+	
+}
+
+var d = [];
+d[0] = {"samson","98"};
+d[1]= {"wisdom","100"};
+console.log(d);
+
+d[1]= {name : "samson",score : "98"};
+d[2]= {name : "wisdom",score : "100"};
+
+<li><a href="">box model</li>
+<li><a href="">specificity</li>
+
+
+ 
+					
+ 
+
+
+
+
+
+
+
+
+	
+
+
+ 

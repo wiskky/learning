@@ -1,0 +1,20 @@
+// const max = 2;
+// const score = 0;
+// loop1: var username = prompt("Enter your name");
+// console.log(username);
+// loop2: var guess = prompt("Enter guess between 1 and " + max);
+// var rangeno = Math.floor(Math.random() * max) + 1;
+// console.log(rangeno);
+// console.log(guess);
+// prompt(guess + ": " + rangeno);
+// if (guess === rangeno) {
+//   score += 10;
+//   prompt(
+//     "Hi ${username} Good Job, let go to the next level, your score is ${score}"
+//   );
+//   loop2;
+//   max++;
+// } else {
+//   prompt("Hi ${username} GAME OVER, your score is ${score}");
+//   loop1;
+// }
